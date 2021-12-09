@@ -1,0 +1,35 @@
+---
+- name: "www root exist"
+  file:
+    state: directory
+    path: /var/www/blog
+- name: "copy MariaDB repo cfg"
+  copy:
+    src: files/Mariadb.repo
+    dest: /etc/yum.repos.d/MariaDB.repo
+- name: "install mariadb"
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - MariaDB-server
+      - MariaDB-client
+- name: "reload mariadb"
+  systemd:
+    name: mariadb
+    state: started 
+- name: "install mysql related module"
+  yum:
+    name: "MySQL-python"
+    state: present
+- name: "create wp's db"
+  mysql_db:
+    name: "{{DB_NAME}}"
+    state: present
+- name: "create user && assign privileges"
+  mysql_user:
+    name: "{{DB_USER}}"
+    password: "{{DB_PW}}"
+    priv: "{{DB_NAME}}.*:ALL"
+    state: present
