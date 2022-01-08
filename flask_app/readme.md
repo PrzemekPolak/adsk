@@ -12,3 +12,11 @@
 - Zainstaluj nginx
 - Skopiuj plik konfiguracyjny "lb.conf"
 - Przeładuj usługę
+## Infrastruktura sieciowa
+- Adresy IP aplikacji:
+    - 3.126.121.19
+    - 3.71.90.171
+- Adres IP serwera proxy:
+    - 3.121.174.67
+## Screen aplikacji
+![](app_screen.png)

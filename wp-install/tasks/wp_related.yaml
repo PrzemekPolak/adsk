@@ -1,5 +1,5 @@
 ---
-- name: "download and extract wordpress && extract wp"
+- name: "download and extract wordpress"
   unarchive:
     src: https://pl.wordpress.org/latest-pl_PL.tar.gz
     dest: /var/www
@@ -8,11 +8,11 @@
   copy:
     src: files/blog-vhost.conf
     dest: /etc/httpd/conf.d/blog.conf
-- name: "copy wp cfg"
+- name: "copy wordpress cfg"
   copy:
     src: files/wp-config.php
     dest: /var/www/wordpress/wp-config.php
-- name: "create wp's db"
+- name: "create wordpress's database"
   mysql_db:
     name: "{{DB_NAME}}"
     state: present

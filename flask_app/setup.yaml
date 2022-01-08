@@ -8,7 +8,7 @@
     - name: "install os packages"
       yum:
         name: python3, python3-pip, git
-    - name: "sync repo"
+    - name: "download repo"
       git:
         repo: "{{REPOSITORY_URL}}"
         dest: "/opt/{{APP_NAME}}"
@@ -36,27 +36,27 @@
         name: "{{APP_NAME}}"
         state: restarted
         daemon_reload: yes
-
-
+        
 - hosts: load_balancer
   become: yes
   vars:
     app_ips:
-      - 18.156.163.251:80
+      - 3.126.121.19:8080
+      - 3.71.90.171:8080
   tasks:
-    - name: install epel
+    - name: "install EPEL"
       yum:
         name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         state: present
-    - name: install nginx
+    - name: "install nginx"
       yum:
         name: nginx
         state: present
-    - name: put nginx conf
+    - name: "put nginx conf"
       template:
         src: files/lb.conf
         dest: /etc/nginx/conf.d/blog.conf
-    - name: reload nginx
+    - name: "reload nginx"
       systemd:
         name: nginx
         state: reloaded
