@@ -36,3 +36,27 @@
         name: "{{APP_NAME}}"
         state: restarted
         daemon_reload: yes
+
+
+- hosts: load_balancer
+  become: yes
+  vars:
+    app_ips:
+      - 18.156.163.251:80
+  tasks:
+    - name: install epel
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+    - name: install nginx
+      yum:
+        name: nginx
+        state: present
+    - name: put nginx conf
+      template:
+        src: files/lb.conf
+        dest: /etc/nginx/conf.d/blog.conf
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded

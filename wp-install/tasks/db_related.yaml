@@ -23,13 +23,3 @@
   yum:
     name: "MySQL-python"
     state: present
-- name: "create wp's db"
-  mysql_db:
-    name: "{{DB_NAME}}"
-    state: present
-- name: "create user && assign privileges"
-  mysql_user:
-    name: "{{DB_USER}}"
-    password: "{{DB_PW}}"
-    priv: "{{DB_NAME}}.*:ALL"
-    state: present
