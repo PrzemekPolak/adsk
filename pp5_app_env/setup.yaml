@@ -1,0 +1,77 @@
+- hosts: app
+  become: yes
+  vars:
+    APP_ARTIFACT_URL: https://github.com/jkanclerz/uek-stock/releases/download/v1.2/uek-stock.jar
+    APP_NAME: pp5_app
+    app_envs:
+      -
+        key: FOO
+        value: BOO
+      -
+        key: PAYU_API_URL
+        value: https://payu
+  tasks:
+    - name: "install java jre"
+      yum:
+        name: "java-11-amazon-corretto"
+        state: present
+    - name: "create user"
+      user:
+        name: "{{APP_NAME}}"
+    - name: "create destination directory"
+      file:
+        path: "/opt/{{APP_NAME}}"
+        state: directory
+        owner: "{{APP_NAME}}"
+        group: "{{APP_NAME}}"
+    - name: "download release"
+      get_url:
+        url: "{{ APP_ARTIFACT_URL }}"
+        dest: "/opt/{{APP_NAME}}/{{APP_NAME}}.jar"
+        owner: "{{APP_NAME}}"
+        group: "{{APP_NAME}}"
+    - name: "create envs directory"
+      file:
+        path: "/etc/{{APP_NAME}}"
+        state: directory
+        owner: "{{APP_NAME}}"
+        group: "{{APP_NAME}}"    
+    - name: "create envs for app"
+      template:
+        src: files/envs
+        dest: "/etc/{{APP_NAME}}/envs"
+    - name: "create system cfg"
+      template:
+        src: files/app.service
+        dest: "/etc/systemd/system/{{APP_NAME}}.service"        
+    - name: "start service"
+      systemd:
+        name: "{{APP_NAME}}"
+        enabled: yes
+        state: restarted
+        daemon_reload: yes
+
+- hosts: lb
+  become: yes
+  vars:
+    app_ips:
+      - 172.31.20.220:8080
+      - 172.31.20.220:8080
+      - 172.31.20.220:8080
+  tasks:
+    - name: "install EPEL"
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+    - name: "install nginx"
+      yum:
+        name: nginx
+        state: present
+    - name: "put nginx conf"
+      template:
+        src: files/lb.conf
+        dest: /etc/nginx/conf.d/blog.conf
+    - name: "reload nginx"
+      systemd:
+        name: nginx
+        state: reloaded
