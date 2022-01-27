@@ -54,6 +54,7 @@
 - hosts: lb
   become: yes
   vars:
+    APP_DOMAIN: example_domain.com
     app_ips:
       - 172.31.20.220:8080
       - 172.31.20.220:8080
@@ -75,3 +76,11 @@
       systemd:
         name: nginx
         state: reloaded
+
+- hosts: db
+  become: yes
+  tasks: []
+
+- hosts: stats
+  become: yes
+  tasks: []
